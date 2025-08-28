@@ -1,0 +1,1057 @@
+Dim Mf(1 To 5000) As Double
+Dim th(1 To 5000) As Double
+Dim w(1 To 5000) As Double
+Dim t, A, B, C, D, E, cost, var, delta, beta, dd, Ea, Ns, Wa As Double
+Dim m, s  As Integer
+Dim z1, z2, j, ja, jb As String
+Dim K, r, sigma1, sigma2, sigma3, sigma4, Sigma, Sigmaf, strain As Double
+Dim L, res, k1, k2, tx, tz, h, y, x, mx, my, mz, n1 As Double
+
+Private Sub UserForm_Show()
+
+End Sub
+
+Private Sub ComboBox1_DropButtonClick() 'lista materiali
+        
+        
+        Cells(2, 7) = z1
+        
+        ListBox2.AddItem ComboBox1
+        ComboBox1 = ""
+         
+    With ComboBox1
+.Clear
+.AddItem "Si"
+.AddItem "Ge"
+.AddItem "InGaP"
+.AddItem "GaP"
+.AddItem "AlP"
+.AddItem "AlGaP"
+.AddItem "AlGaAs"
+.AddItem "InAlAs"
+.AddItem "AlInP"
+.AddItem "SiGe"
+.AddItem "SiGeSn"
+.AddItem "GaAs"
+.AddItem "InGaAs"
+.AddItem "InGaAsP"
+.AddItem "GaAsP"
+.AddItem "AlInGaP"
+.AddItem "InP"
+End With
+
+
+
+End Sub
+
+
+
+
+
+Private Sub CommandButton2_Click() 'comando di rimozione elemento selezione
+Dim i As Integer
+
+   On Error GoTo Errore:
+       
+             i = ListBox2.ListIndex
+             
+           If ListBox2.Selected(i) = True Then
+                
+                ListBox2.RemoveItem (i)
+                ListBox2.RemoveItem (i - 1)
+                 ListBox2.Selected(i) = False
+            
+            End If
+        
+Errore:
+End Sub
+
+Private Sub CommandButton3_Click() 'comando cancellazione lista materiali
+
+On Error GoTo Errore:
+
+For m = 2 To 2000 Step 1
+
+Cells(m, 1).Clear
+Cells(m, 2).Clear
+Cells(m, 3).Clear
+Cells(m, 4).Clear
+Cells(m, 5).Clear
+Cells(m, 6).Clear
+Cells(m, 7).Clear
+Cells(m, 8).Clear
+Cells(m, 9).Clear
+Cells(m, 22).Clear
+Cells(m, 23).Clear
+Cells(m, 24).Clear
+Cells(m, 25).Clear
+Cells(m, 26).Clear
+Cells(m, 27).Clear
+Cells(m, 28).Clear
+Cells(m, 30).Clear
+Next
+
+
+ListBox2.Clear
+
+Errore:
+
+End Sub
+
+Private Sub CommandButton4_Click() 'comando di uscita dal programma
+
+        Unload Me
+End Sub
+
+Private Sub CommandButton5_Click() 'comando inserimento materiale
+Dim i As Integer
+
+Dim ai, bi, ci, di As Single
+
+
+
+On Error GoTo Errore:
+        
+        
+            If ListBox2.Text = "InGaP" Then
+                i = ListBox2.ListIndex
+                x = InputBox("immetti %Ga tra 0-1", "InGaP")
+                ai = (0.0000046 + (0.000001 * x))
+                bi = (5.8687 - (0.4182 * x))
+                ci = (611000000000# + (419000000000# * x))
+                di = (0.36 - (0.05 * x))
+                Mf(i) = (ci / (1 - di))
+                bd = 2.261 * x + (1 - x) * 1.435
+                dd = Abs(4.81 * (1 - x) - 0.67 * x)
+                
+                
+                Cells(i + 1, 1) = "InGaP"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                h = InputBox("immetti spessore (um)", "InGaP")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+                
+                
+            
+            
+            
+            ElseIf ListBox2.Text = "AlInP" Then
+                i = ListBox2.ListIndex
+                x = InputBox("immetti %Al tra 0-1", "AlInP")
+                
+                ai = (0.0000046 * (1 - x)) + (0.000024 * x)
+                bi = 5.86 - (0.3965 * x)
+                ci = (6.11 * x + (1.464 * (1 - x))) * 10000000000#
+                di = (1 - x) * 0.36 + (0.27 * x)
+                Mf(i) = (ci / (1 - di))
+                dd = Abs(4.81 * (1 - x) - 2.566 * x)
+                If x <= 0.4 Then
+                bd = 1.35 + (2.15 * x) + (0.4 * x * x)
+                Else
+                bd = 2.21 + 0.27 * x
+                End If
+                
+                
+                Cells(i + 1, 1) = "AlInP"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                h = InputBox("immetti spessore (um)", "AlInP")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            ElseIf ListBox2.Text = "AlP" Then
+                i = ListBox2.ListIndex
+                h = InputBox("immetti spessore (um)", "AlP")
+                ai = 0.000024
+                bi = 5.45635
+                ci = 61100000000#
+                di = 0.27
+                Mf(i) = (ci / (1 - di))
+                bd = 2.48
+                dd = 2.566
+                
+                
+                Cells(i + 1, 1) = "AlP"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            ElseIf ListBox2.Text = "GaAs" Then
+                i = ListBox2.ListIndex
+                h = InputBox("immetti spessore (um)", "GaAs")
+                ai = 0.00000573
+                bi = 5.65325
+                ci = 859000000000#
+                di = 0.31
+                Mf(i) = (ci / (1 - di))
+                bd = 1.43
+                dd = 5.32
+                
+                
+                
+                Cells(i + 1, 1) = "GaAs"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+                
+            
+            ElseIf ListBox2.Text = "GaP" Then
+                i = ListBox2.ListIndex
+                h = InputBox("immetti spessore (um)", "GaP")
+                ai = 0.00000465
+                bi = 5.4505
+                ci = 1030000000000#
+                di = 0.31
+                Mf(i) = (ci / (1 - di))
+                bd = 2.261
+                dd = 4.14
+                
+                Cells(i + 1, 1) = "GaP"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+                
+            ElseIf ListBox2.Text = "InP" Then
+                i = ListBox2.ListIndex
+                h = InputBox("immetti spessore (um)", "InP")
+                ai = 0.0000046
+                bi = 5.8687
+                ci = 611000000000#
+                di = 0.36
+                Mf(i) = (ci / (1 - di))
+                bd = 1.344
+                dd = 4.81
+                
+                Cells(i + 1, 1) = "InP"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            ElseIf ListBox2.Text = "Si" Then
+                i = ListBox2.ListIndex
+                h = InputBox("immetti spessore (um)", "Si")
+                ai = 0.0000026
+                bi = 5.431
+                ci = 1300000000000#
+                di = 0.28
+                Mf(i) = (ci / (1 - di))
+                 bd = 1.12
+                 dd = 2.329
+                
+                
+                Cells(i + 1, 1) = "Si"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            
+            ElseIf ListBox2.Text = "Ge" Then
+                i = ListBox2.ListIndex
+                h = InputBox("immetti spessore (um)", "Ge")
+                ai = 0.0000059
+                bi = 5.658
+                ci = 1030000000000#
+                di = 0.26
+                Mf(i) = (ci / (1 - di))
+                bd = 0.6657
+                dd = 5.3234
+                
+                
+                Cells(i + 1, 1) = "Ge"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            ElseIf ListBox2.Text = "AlGaP" Then
+                i = ListBox2.ListIndex
+                 x = InputBox("immetti %Al tra 0-1", "AlGaP")
+                 h = InputBox("immetti spessore (um)", "AlGaP")
+                ai = ((4.65 * (1 - x) + 4.2 * x)) * 0.000001
+                bi = 5.4635 * x + (1 - x) * 5.4505
+                ci = ((6.11 * x) + (1.464 * x)) * 10000000000#
+                di = 0.27 * x + 0.31 * (1 - x)
+                Mf(i) = (ci / (1 - di))
+                 bd = 2.261 + 0.219 * x
+                dd = Abs(4.14 * (1 - x) - 2.566 * x)
+                
+                Cells(i + 1, 1) = "AlGaP"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            ElseIf ListBox2.Text = "AlGaAs" Then
+                i = ListBox2.ListIndex
+                x = InputBox("immetti %Al tra 0-1", "AlGaAs")
+                h = InputBox("immetti spessore (um)", "AlGaAs")
+                ai = (5.73 - 0.53 * x) * 0.000001
+                bi = 5.6533 + (0.0078 * x)
+                ci = (8.53 - 0.18 * x) * 10000000000#
+                di = 0.31 - (0.1 * x)
+                Mf(i) = (ci / (1 - di))
+                dd = Abs(5.32 * (1 - x) - 1.56 * x)
+                If x <= 0.5 Then
+                 bd = 1.43 + (1.707 * x) - (1.437 * (x ^ 2)) + (1.31 * (x ^ 3))
+               Else
+               bd = 1.91 + 0.185 * x + 0.055 * (x ^ 2)
+               End If
+                
+               
+                
+                Cells(i + 1, 1) = "AlGaAs"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            ElseIf ListBox2.Text = "SiGe" Then
+                i = ListBox2.ListIndex
+                x = InputBox("immetti %Ge tra 0-1", "SiGe")
+                h = InputBox("immetti spessore (um)", "SiGe")
+                dd = Abs(2.329 + 3.493 * x - (0.499 * x ^ 2))
+                If x < 0.85 Then
+                
+                ai = (2.6 + 2.55 * x) * 0.000001
+                bi = 5.431 + 0.2 * x + 0.027 * (x ^ 2)
+                ci = (130.2 - 28.1 * x) * 100000000000#
+                di = 0.278 - 0.005 * x
+                Mf(i) = (ci / (1 - di))
+                bd = 1.12 - 0.41 * x + 0.008 * (x ^ 2)
+                
+                
+                
+                Cells(i + 1, 1) = "SiGe"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            Else
+            
+                 ai = (-1.63 + 7.53 * x) * 0.000001
+                bi = 5.431 + 0.2 * x + 0.027 * (x ^ 2)
+                ci = (130.2 - 28.1 * x) * 100000000000#
+                di = 0.278 - 0.005 * x
+                Mf(i) = (ci / (1 - di))
+                
+                If x < 0.2 Then
+                bd = 0.66 + 1.34 * x
+                Else
+                bd = 1.12 - 0.41 * x + 0.008 * (x ^ 2)
+                
+                End If
+                
+                
+                
+                Cells(i + 1, 1) = "SiGe"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+            
+            End If
+            
+           ElseIf ListBox2.Text = "SiGeSn" Then
+            i = ListBox2.ListIndex
+            x = InputBox("immetti %Si tra 0-1", "SiGeSn")
+            y = InputBox("immetti %Sn tra 0-1", "SiGeSn")
+            h = InputBox("immetti spessore (um)", "SiGeSn")
+            ai = (2.6 * x + 5.9 * (1 - x - y) + 22 * y) * 0.000001
+            bi = 5.658 - (0.227 * x) - (0.026 * (1 - x)) - (1.958 * y) + 0.166 * (1 - y)
+            ci = (10.3 * (1 - x - y) + 13 * x + 4.3 * y) * 100000000000#
+            di = 0.26 * (1 - x - y) + 0.28 * x + 0.33 * y
+            Mf(i) = (ci / (1 - di))
+             bd = 0.66 - ((1 - x - y) * x) + (1.12 * x)
+             dd = Abs(2.3229 * x - 5.3234 * (1 - x - y) - 6.54 * y)
+            
+            
+            
+            Cells(i + 1, 1) = "SiGeSn"
+            Cells(i + 1, 2) = ai
+            Cells(i + 1, 3) = bi
+            Cells(i + 1, 4) = ci
+            Cells(i + 1, 5) = di
+            Cells(i + 1, 11) = Mf(i)
+            Cells(i + 1, 6) = x
+            Cells(i + 1, 25) = bd
+           z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = tz(i)
+                
+                ElseIf ListBox2.Text = "InAlAs" Then
+                i = ListBox2.ListIndex
+                x = InputBox("immetti %In tra 0-1", "InAlAs")
+                tz(i) = InputBox("immetti spessore (um)", "InAlAs")
+                ai = 5.2 * (1 - x) * 0.000001 + 4.52 * 0.000001
+                bi = (6.0583 * x) + (5.66139 * (1 - x))
+                ci = 510000000000# * x + 835000000000# * (1 - x)
+                di = 0.35 * x + 0.21 * (1 - x)
+                Mf(i) = (ci / (1 - di))
+                dd = Abs(5.68 * x - 1.56 * (x - 1))
+                
+                If x <= 0.5 Then
+                 bd = 1.43 + 1.707 * x - 1.437 * x * x + 1.31 * x * x * x
+               Else
+               bd = 1.91 + 0.185 * x + 0.055 * x * x
+               End If
+                
+                Cells(i + 1, 1) = "InAlAs"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+                
+                 ElseIf ListBox2.Text = "InGaAs" Then
+                i = ListBox2.ListIndex
+                x = InputBox("immetti %Ga tra 0-1", "InGaAs")
+                h = InputBox("immetti spessore (um)", "InGaAs")
+                ai = ((5.73 * x) + (4.52 * (1 - x))) * 0.000001
+                bi = 6.0583 - (0.405 * x)
+                ci = ((5.14 * (1 - x)) + 8.59 * x) * 100000000000#
+                di = 0.35 - (0.04 * x)
+                Mf(i) = (ci / (1 - di))
+                bd = 0.36 + 0.491 * x + (0.58 * x * x)
+                dd = Abs(5.68 * (1 - x) - 5.32 * x)
+                
+                Cells(i + 1, 1) = "InGaAs"
+                Cells(i + 1, 2) = ai
+                Cells(i + 1, 3) = bi
+                Cells(i + 1, 4) = ci
+                Cells(i + 1, 5) = di
+                Cells(i + 1, 11) = Mf(i)
+                Cells(i + 1, 6) = x
+                Cells(i + 1, 25) = bd
+                z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+                
+               ElseIf ListBox2.Text = "InGaAsP" Then
+            i = ListBox2.ListIndex
+            x = InputBox("immetti %In tra 0-1", "InGaAsP")
+            y = InputBox("immetti %As tra 0-1", "InGaAsP")
+            h = InputBox("immetti spessore (um)", "InGaAsP")
+            ai = ((4.52 * x * y) + (4.6 * x * (1 - y)) + (5.73 * (1 - x)) + (4.65 * (1 - x) * (1 - y))) * 0.000001
+            bi = ((1 - x) * y * 6.0583) + ((1 - x) * (1 - y) * 5.8687) + (x * y * 5.6533) + (x * (1 - y) * 5.4505)
+            ci = ((5.14 * x * y) + (6.11 * x * (1 - y)) + (8.59 * (1 - x)) + (10.3 * (1 - x) * (1 - y))) * 100000000000#
+            di = (0.35 * x * y + 0.36 * x * (1 - y) + 0.31 * (1 - x) + 0.31 * (1 - x) * (1 - y))
+            Mf(i) = (ci / (1 - di))
+            bd = 1.35 + (0.668 * x) - (1.17 * y) + (0.758 * (x ^ 2)) + (0.18 * (y ^ 2)) - (0.069 * x * y) - (0.322 * y * (x ^ 2)) + (0.03 * x * (y ^ 2))
+            dd = Abs((1 - x) * y * 5.68 + (1 + x) * (1 - y) * 4.81 + x * y * 5.38 + x * (1 - y) * 4.14)
+            
+            Cells(i + 1, 1) = "InGaAsP"
+            Cells(i + 1, 2) = ai
+            Cells(i + 1, 3) = bi
+            Cells(i + 1, 4) = ci
+            Cells(i + 1, 5) = di
+            Cells(i + 1, 11) = Mf(i)
+            Cells(i + 1, 6) = x
+            Cells(i + 1, 25) = bd
+           z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = tz(i)
+                
+            ElseIf ListBox2.Text = "GaAsP" Then
+            i = ListBox2.ListIndex
+            x = InputBox("immetti %As tra 0-1", "GaAsP")
+            h = InputBox("immetti spessore (um)", "GaAsP")
+            ai = ((5.73 * x) + (4.65 * (1 - x))) * 0.000001
+            bi = (5.65325 * x) + (5.4505 * (1 - x))
+            ci = ((85.9 * x) + (1.03 * (1 - x))) * 1000000000000#
+            di = (0.31 * x) + (0.31 * (1 - x))
+            Mf(i) = (ci / (1 - di))
+            bd = (1.43 * x) + (2.261 * (1 - x))
+            dd = Abs(4.14 * (1 - x) - 5.32 * x)
+
+
+            
+            
+            Cells(i + 1, 1) = "GaAsP"
+            Cells(i + 1, 2) = ai
+            Cells(i + 1, 3) = bi
+            Cells(i + 1, 4) = ci
+            Cells(i + 1, 5) = di
+            Cells(i + 1, 11) = Mf(i)
+            Cells(i + 1, 6) = x
+            Cells(i + 1, 25) = bd
+           z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+                Cells(i + 1, 26) = dd
+                Cells(i + 2, 7) = h
+                
+            ElseIf ListBox2.Text = "AlInGaP" Then
+            i = ListBox2.ListIndex
+            x = InputBox("immetti %Al tra 0-1", "AlInGaP")
+            y = InputBox("immetti %In tra 0-1", "AlInGaP")
+            h = InputBox("immetti spessore (um)", "AlInGaP")
+            ai = (0.0000245 * x) + (0.0000046 * y) + ((1 - x - y) * 0.00000465)
+            bi = (5.45635 * x) + (5.8687 * y) + ((1 - x - y) * 5.4505)
+            ci = (61100000000# * x) + (611000000000# * y) + ((1 - x - y) * 1030000000000#)
+            di = (0.27 * x) + (0.36 * y) + ((1 - x - y) * 0.31)
+            Mf(i) = (ci / (1 - di))
+            bd = (2.48 * x) + (1.344 * y) + ((1 - x - y) * 2.261)
+            dd = Abs(2.566 * x - 4.81 * y - 4.14 * (1 - x - y))
+
+            
+            Cells(i + 1, 1) = "AlInGaP"
+            Cells(i + 1, 2) = ai
+            Cells(i + 1, 3) = bi
+            Cells(i + 1, 4) = ci
+            Cells(i + 1, 5) = di
+            Cells(i + 1, 11) = Mf(i)
+            Cells(i + 1, 6) = x
+            Cells(i + 1, 25) = bd
+           z2 = InputBox("temperatura di processo", "°C")
+                Cells(i + 1, 8) = z2
+           Cells(i + 1, 26) = dd
+           Cells(i + 2, 7) = h
+End If
+
+ 
+
+y = ListBox2.ListIndex
+
+   If y <> 1 Then
+   End If
+   
+   On Error GoTo Errore:
+   
+   
+  
+   w(y) = (4 - Cells(y + 1, 5))
+   
+   w(y + 1) = (1 + Cells(y + 1, 5)) * 16 * Sqr(2) * 3.14
+   
+   w(y + 2) = (Cells(y - 1, 3) - Cells(y + 1, 3)) / Cells(y + 1, 3)
+   
+   beta = w(y) / (w(y + 1) * w(y + 2))
+   
+   cost = Log(4 * Sqr(2)) - Log(Cells(y + 1, 3))
+   
+    
+    
+    Cells(y + 1, 17) = beta
+    
+    Cells(y + 1, 19) = cost
+    
+    TextBox3 = Int(i / 2)
+    
+Errore:
+    
+End Sub
+
+
+Private Sub CommandButton6_Click() 'comando di calcolo spessore critico
+Dim n1 As Double
+
+n1 = 1
+
+For m = 0 To ListBox2.ListCount Step 2
+
+If m > 3 Then
+
+On Error GoTo Errore:
+
+ For N = 0 To 50000 Step 100
+
+  Cells(m, 21) = Abs(N)
+
+If Cells(m, 21) = 0 Then
+
+Cells(m, 21) = 0.0001
+
+End If
+
+
+ Cells(m, 20) = Abs(Cells(m, 3) * Cells(m, 17) * Log(4 * Sqr(2) * Cells(m, 21) / Cells(m, 3))) - Cells(m, 21)
+
+ If Cells(m, 20) < 100 Then Exit For
+
+     Next N
+     
+     For n1 = N To 50000 Step 0.1
+     
+     Cells(m, 21) = Abs(n1)
+
+If Cells(m, 21) = 0 Then
+
+Cells(m, 21) = 0.0001
+
+End If
+
+
+ Cells(m, 20) = Abs(Cells(m, 3) * Cells(m, 17) * Log(4 * Sqr(2) * Cells(m, 21) / Cells(m, 3))) - Cells(m, 21)
+
+ If Cells(m, 20) = 0 Then Exit For
+ If Cells(m, 20) < 0.01 Then Exit For
+ 
+ Next n1
+ 
+     Mf(m) = Cells(m, 11)
+     
+     th(m) = (Cells(m, 21)) / 10000
+     
+     If th(m) >= 5 Then
+     th(m) = 10000
+     End If
+     
+   Cells(m, 7) = th(m)
+   Cells(m, 7).Interior.ColorIndex = 4
+  End If
+ 
+ Next m
+
+Errore:
+
+End Sub
+
+
+
+
+Private Sub CommandButton7_Click() 'Calcolo Curvatura
+
+z1 = InputBox("spessore substrato", "um")
+
+Cells(2, 7) = z1
+
+t = z1
+
+Mf(2) = Cells(2, 11)
+
+For m = 0 To ListBox2.ListCount Step 2
+
+If m > 2 Then
+
+On Error GoTo Errore:
+
+tz = Cells(m + 1, 7)
+
+ t = t + th(m)
+
+     r = (Mf(m) * th(m)) / (Mf(m - 2) * (t))
+     
+     A = ((t) - (th(m) * r)) / (2 * (1 + r)) ' variabile t
+     
+     B = 1 / ((Cells(m, 2) - Cells(m - 2, 2)) * (Cells(m, 8) - 25))
+     
+     C = ((t) ^ 2) / (6 * (t - 2 * A))
+     
+     D = (th(m) ^ 2) / (6 * (th(m) + 2 * A))
+     
+     E = (0.5 * (t + th(m)))
+     
+     K = (B * (C + D + E)) / 1000000000# 'curvatura
+    
+     sigma1 = (Mf(2) * (t ^ 3))
+     sigma2 = Mf(m) * (tz ^ 3)
+     sigma3 = 3 * Mf(m) * (tz ^ 2) * (t + tz)
+     sigma4 = (6 * (t + tz) * t * (K * 1000000000#))
+    
+    Sigma = -(sigma1 + sigma2 - sigma3) / sigma4
+    
+    Sigmaf = (t ^ 2 * Mf(m)) / (6 * tz * K * 1000000000#)
+    
+    strain = ((Cells(m, 2) - Cells(m - 2, 2)) * (Cells(m, 8) - Cells(m - 2, 8)) / (1 + r)) + (tz + A) / (K * 1000000000#)
+    
+    Ea = (((Cells(m, 3) - (Cells(m - 2, 3) - 1) ^ 2)) * (Cells(m, 4) * 0.1) * (Cells(m, 7) * 0.000001))  'energia formazione difetti in Joule
+    
+    Ns = 5E+22 * (Exp(-Ea / ((1.38 * 10^ - 23) * (Cells(m, 8) + 273.15))))  'densità difetti
+    
+    Cells(m, 13) = r
+
+    Cells(m, 15) = A
+    
+    Cells(m, 9) = K
+    
+    Wa = Cells(m, 3) - Cells(m - 2, 3)
+    
+    Cells(m, 22) = Sigma / 10000000000#  ' stress superficiale
+    Cells(m, 23) = Sigmaf / 10000000000# 'stress film
+    Cells(m, 24) = strain                ' strain del layer
+    Cells(m, 28) = Cells(m + 1, 7) / Cells(m, 7) 'rilassamento
+    Cells(m, 30) = Abs((Cells(m, 28) * Wa) + Cells(m - 2, 3)) 'nuova costante reticolare
+    
+    If Cells(m, 30) > Cells(m, 3) Then
+    Cells(m, 30) = Cells(m, 3)
+    End If
+    
+    
+    
+    If Cells(m, 28) < 1 Then
+    
+    Cells(m, 27) = 0
+    
+    Else
+    
+    Cells(m, 27) = (((Ns) ^ (0.3333)) ^ 2)  'densità difetti x cm2
+    
+    End If
+    
+    End If
+    Next m
+    
+    
+    
+Errore:
+
+End Sub
+
+Private Sub commandbutton8_click() 'selezione materiali per calcolo mismatch reticolare
+
+
+
+On Error GoTo Errore:
+
+        j = InputBox("immetti primo layer")
+        
+           If j = "InGaP" Then
+                x = InputBox("immetti %Ga tra 0-1", "InGaP")
+                k1 = (5.8687 - (0.4182 * x))
+                
+               
+            
+            ElseIf j = "AlInP" Then
+                x = InputBox("immetti %Al tra 0-1", "AlInP")
+                k1 = 5.86 - (0.3965 * x)
+                
+              
+            ElseIf j = "AlP" Then
+                k1 = 5.45635
+               
+            
+            ElseIf j = "GaAs" Then
+                k1 = 5.65325
+    
+    
+            ElseIf j = "GaP" Then
+                k1 = 5.8687
+               
+            ElseIf j = "InP" Then
+                k1 = 5.8687
+            
+            ElseIf j = "Si" Then
+                k1 = 5.431
+        
+            
+            ElseIf j = "Ge" Then
+                k1 = 5.658
+   
+            
+            ElseIf j = "AlGaP" Then
+                 x = InputBox("immetti %Al tra 0-1", "AlGaP")
+                k1 = 5.4635 * x + (1 - x) * 5.4505
+                
+             
+            
+            ElseIf j = "AlGaAs" Then
+                x = InputBox("immetti %Al tra 0-1", "AlGaAs")
+                k1 = 5.6533 + (0.0078 * x)
+                
+          
+            
+            ElseIf j = "SiGe" Then
+                x = InputBox("immetti %Ge tra 0-1", "SiGe")
+                k1 = 5.431 + 0.2 * x + 0.027 * (x ^ 2)
+            
+            
+           ElseIf j = "SiGeSn" Then
+            x = InputBox("immetti %Si tra 0-1", "SiGeSn")
+            y = InputBox("immetti %Sn tra 0-1", "SiGeSn")
+            k1 = 5.658 - (0.227 * x) - 0.026 * (1 - x) - (1.958 * y) + 0.166 * (1 - y)
+            
+                ElseIf j = "InAlAs" Then
+                x = InputBox("immetti %In tra 0-1", "InAlAs")
+                k1 = (6.0583 * x) + (5.66139 * (1 - x))
+                
+ 
+                 ElseIf j = "InGaAs" Then
+                x = InputBox("immetti %Ga tra 0-1", "InGaAs")
+                k1 = 6.0583 - (0.405 * x)
+              
+               ElseIf j = "InGaAsP" Then
+            x = InputBox("immetti %In tra 0-1", "InGaAsP")
+            y = InputBox("immetti %As tra 0-1", "InGaAsP")
+            k1 = ((1 - x) * y * 6.0583) + ((1 - x) * (1 - y) * 5.8687) + (x * y * 5.6533) + (x * (1 - y) * 5.4505)
+                
+            ElseIf j = "GaAsP" Then
+            x = InputBox("immetti %As tra 0-1", "GaAsP")
+            k1 = (5.65325 * x) + (5.4505 * (1 - x))
+            
+             ElseIf j = "AlInGaP" Then
+            x = InputBox("immetti %Al tra 0-1", "AlInGaP")
+            y = InputBox("immetti %In tra 0-1", "AlInGaP")
+            k1 = (5.45635 * x) + (5.8687 * y) + ((1 - x - y) * 5.4505)
+         
+
+End If
+
+
+
+ja = InputBox("immetti secondo layer") 'calcolo composizione II layer per match reticolare con I layer
+
+  tx = 0
+  
+  
+              If ja = "InGaP" Then
+             For L = 0 To 1 Step 0.0001
+                k2 = (5.8687 - (0.4182 * L))
+                res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+                 
+                 
+                
+               
+            
+            ElseIf ja = "AlInP" Then
+            For L = 0 To 1 Step 0.0001
+                 k2 = (5.86 - (0.3965 * L))
+                 res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+                 
+              
+            ElseIf ja = "AlP" Then
+                 k2 = 5.45635
+               
+            
+            ElseIf ja = "GaAs" Then
+                 k2 = 5.65325
+    
+    
+            ElseIf ja = "GaP" Then
+                 k2 = 5.4505
+               
+            ElseIf j = "InP" Then
+                k2 = 5.8687
+            
+            ElseIf ja = "Si" Then
+                 k2 = 5.431
+        
+            
+            ElseIf ja = "Ge" Then
+                 k2 = 5.658
+   
+            
+            ElseIf ja = "AlGaP" Then
+            For L = 0 To 1 Step 0.0001
+                 k2 = 5.4635 * L + (1 - L) * 5.4505
+                res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+             
+            
+            ElseIf ja = "AlGaAs" Then
+            For L = 0 To 1 Step 0.0001
+                 k2 = 5.6533 + (0.0078 * L)
+                 res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+                
+          
+            
+            ElseIf ja = "SiGe" Then
+            For L = 0 To 1 Step 0.0001
+                 k2 = 5.431 + 0.2 * L + 0.027 * (L ^ 2)
+                 res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+                
+                
+           ElseIf ja = "SiGeSn" Then
+           tx = 0
+              For L = 0 To 1 Step 0.001
+                Do
+                k2 = 5.658 - (0.227 * L) - 0.026 * (1 - L) - (1.958 * tx) + 0.166 * (1 - tx)
+                  res = Abs(k2 - k1)
+                If res <= 0.0001 Then GoTo messaggio1
+                  tx = tx + 0.001
+               
+                Loop Until tx >= 1
+messaggio1:
+               If Abs(L + tx) >= 1 Then GoTo passa1
+                
+                    TextBox1.Text = Format(L, "0.00000")
+                    TextBox2.Text = Format(tx, "0.00000")
+                    MsgBox "", vbOKOnly, ""
+                    
+passa1:
+                tx = 0
+                
+              Next L
+                
+                
+                ElseIf ja = "InAlAs" Then
+                For L = 0 To 1 Step 0.0001
+                 k2 = (6.0583 * L) + (5.66139 * (1 - L))
+                res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+                
+ 
+                 ElseIf ja = "InGaAs" Then
+                 For L = 0 To 1 Step 0.0001
+                 k2 = 6.0583 - (0.405 * L)
+                 res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+              
+               ElseIf ja = "InGaAsP" Then
+               tx = 0
+              For L = 0 To 1 Step 0.01
+                Do
+             k2 = ((1 - L) * tx * 6.0583) + ((1 - L) * (1 - tx) * 5.8687) + (L * tx * 5.6533) + (L * (1 - tx) * 5.4505)
+             res = Abs(k2 - k1)
+                If res <= 0.001 Then Exit For
+                  tx = tx + 0.01
+               
+                Loop Until tx >= 1
+                tx = 0
+                
+              Next L
+                
+            ElseIf ja = "GaAsP" Then
+             For L = 0 To 1 Step 0.0001
+             k2 = (5.65325 * L) + (5.4505 * (1 - L))
+         res = 1 / (1 + Math.Exp(-(k2 - k1)))
+                If res <= 0.5 Then Exit For
+                 Next
+                 
+            ElseIf ja = "AlInGaP" Then
+               tx = 0
+              For L = 0 To 1 Step 0.001
+                Do
+             k2 = ((L) * 5.45635) + (tx * 5.8687) + ((1 - L - tx) * 5.4505)
+             res = Abs(k2 - k1)
+                If res <= 0.00001 Then GoTo messaggio
+                  tx = tx + 0.0001
+               
+                Loop Until tx >= 1
+messaggio:
+               If Abs(L + tx) >= 1 Then GoTo passa
+                
+                    TextBox1.Text = Format(L, "0.00000")
+                    TextBox2.Text = Format(tx, "0.00000")
+                    MsgBox "", vbOKOnly, ""
+                    
+passa:
+                tx = 0
+                
+              Next L
+End If
+
+ ' MsgBox L, vbOKCancel, "x%elemento"
+ ' MsgBox tx, vbOKCancel, "y%elemento"
+ ' MsgBox res, vbOKCancel, "delta"
+ TextBox1.Text = L
+ TextBox2.Text = tx
+ 
+ If TextBox2.Text = 0 Then
+ TextBox2.Text = ""
+ 
+ End If
+ 
+Errore:
+
+End Sub
+
+
+
+
+Private Sub UserForm_Click()
+
+End Sub
